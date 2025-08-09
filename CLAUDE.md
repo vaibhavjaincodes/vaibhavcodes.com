@@ -62,9 +62,18 @@ pnpm format
 - Use consistent frontmatter across content types
 - Tag content for easy filtering and discovery
 
+## Security Best Practices
+
+- **Git Authentication**: SSH keys are more secure than HTTPS tokens
+- **Environment Variables**: Store all secrets in Netlify dashboard, never in code
+- **Git Security**: When adding payment features, implement pre-commit hooks (git-secrets, gitleaks)
+- **Repository**: Currently public for free Netlify deployment, switch to private when adding paid content
+- **Never commit**: API keys, database passwords, payment credentials, .env files
+
 ## Future Enhancements
 
 - RSS feeds for content sections
 - Advanced metadata tracking (ratings, difficulty, reading dates)
 - Search functionality across all content types
 - Performance optimizations (image optimization, caching)
+- Git security hooks when implementing payment features
