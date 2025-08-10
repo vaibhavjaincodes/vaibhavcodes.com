@@ -1,0 +1,347 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{post.data.title} | Vaibhav Jain</title>
+    <meta name="description" content={post.data.description} />
+  </head>
+  <body>
+    <header class="header">
+      <nav class="nav">
+        <div class="nav-brand">
+          <a href="/">Vaibhav Jain</a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/courses">Courses</a></li>
+          <li><a href="/papers">Papers</a></li>
+          <li><a href="/books">Books</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="blog-post">
+      <div class="container">
+        <article>
+          <header class="post-header">
+            <div class="post-meta">
+              <time datetime={post.data.publishDate.toISOString()}>
+                {post.data.publishDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+              {post.data.tags && (
+                <div class="tags">
+                  {post.data.tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <h1>{post.data.title}</h1>
+            <p class="post-description">{post.data.description}</p>
+          </header>
+
+          <div class="post-content">
+            <Content />
+          </div>
+        </article>
+        
+        <footer class="post-footer">
+          <div class="back-to-blog">
+            <a href="/blog">← Back to all posts</a>
+          </div>
+        </footer>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Vaibhav Jain. Building the future, one explanation at a time.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --primary: #1a1a1a;
+    --secondary: #6366f1;
+    --accent: #f8fafc;
+    --text: #334155;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --surface: #ffffff;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Header */
+  .header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .nav-brand a {
+    font-size: 1.375rem;
+    font-weight: 800;
+    text-decoration: none;
+    color: var(--primary);
+    letter-spacing: -0.025em;
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2.5rem;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .nav-links a:hover {
+    color: var(--secondary);
+  }
+
+  /* Blog Post */
+  .blog-post {
+    padding: 4rem 0;
+  }
+
+  .post-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .post-meta time {
+    color: var(--text-light);
+    font-size: 0.95rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background: var(--secondary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .post-header h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    letter-spacing: -0.025em;
+  }
+
+  .post-description {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Post Content */
+  .post-content {
+    max-width: 100%;
+  }
+
+  .post-content :global(h1),
+  .post-content :global(h2),
+  .post-content :global(h3),
+  .post-content :global(h4) {
+    color: var(--primary);
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 2rem 0 1rem 0;
+  }
+
+  .post-content :global(h2) {
+    font-size: 2rem;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+
+  .post-content :global(h3) {
+    font-size: 1.5rem;
+  }
+
+  .post-content :global(p) {
+    margin: 1.5rem 0;
+    line-height: 1.8;
+  }
+
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+
+  .post-content :global(li) {
+    margin: 0.5rem 0;
+    line-height: 1.7;
+  }
+
+  .post-content :global(blockquote) {
+    border-left: 4px solid var(--secondary);
+    padding: 1rem 2rem;
+    background: var(--accent);
+    margin: 2rem 0;
+    font-style: italic;
+  }
+
+  .post-content :global(code) {
+    background: var(--accent);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  .post-content :global(pre) {
+    background: var(--primary);
+    color: #e5e5e5;
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2rem 0;
+    font-family: 'Fira Code', 'Courier New', monospace;
+  }
+
+  .post-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+
+  .post-content :global(strong) {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  /* Post Footer */
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .back-to-blog a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .back-to-blog a:hover {
+    color: var(--primary);
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--primary);
+    color: #94a3b8;
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  .footer p {
+    font-size: 0.95rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .nav {
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 1.5rem;
+    }
+
+    .nav-links {
+      gap: 2rem;
+    }
+
+    .blog-post {
+      padding: 2rem 0;
+    }
+
+    .post-meta {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
